@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(IoTMQTT CXX)
 
-add_subdirectory(Paho)
-
-include_directories(Paho/include)
-include_directories(include)
+include_directories(${CMAKE_SOURCE_DIR}/Paho/include)
+include_directories(${CMAKE_SOURCE_DIR}/include)
 
 file(GLOB SOURCE_FILES 
-    src/*.cpp)
+    *.cpp)
 
 find_library(POCO_UTIL PocoUtil)
 find_library(POCO_XML PocoXML)

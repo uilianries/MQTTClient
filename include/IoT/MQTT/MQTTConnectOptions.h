@@ -27,19 +27,19 @@ namespace MQTT {
 
 	struct MQTTConnectOptions
 	{
-		int keepAliveInterval;
+		int keepAliveInterval = 20;
 			/// Keep-alive interval in seconds.
 	
-		int retryInterval;
+		int retryInterval = 10;
 			/// Retry interval in seconds.
 		
-		int connectTimeout;
+		int connectTimeout = 10;
 			/// Connect timeout in seconds.
 
-		bool cleanSession;
+		bool cleanSession = true;
 			/// Start with a clean session.
 			
-		bool reliable;
+		bool reliable = false;
 			/// If set to true, only one message at a time can be "in flight".
 
 		std::string username;
@@ -54,16 +54,16 @@ namespace MQTT {
 		std::string willMessage;
 			/// Last will message.
 
-		bool willRetained;
+		bool willRetained = false;
 			/// Retained flag for will message.
 	
-		int willQoS;
+		int willQoS = 0;
 			/// Quality of Service level for will message (0-2).
 	
 		std::vector<std::string> serverURIs;
 			/// Optional list of server URIs.
 
-		int mqttVersion;
+		int mqttVersion = 0;
 			/// Sets the version of MQTT to be used on the connect. Valid values are
 			/// 0, 3 and 4.
 			///   * 0 = default: start with 3.1.1, and if that fails, fall back to 3.1 
@@ -94,7 +94,7 @@ namespace MQTT {
 			/// considered. This setting can be used to set an SSL anonymous connection 
 			/// ("aNULL" string value, for instance).
 			
-		bool sslEnableServerCertAuth;
+		bool sslEnableServerCertAuth = false;
 			/// Enable or disable verification of the server certificate.
 	};
 

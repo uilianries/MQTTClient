@@ -23,7 +23,7 @@ namespace MQTT {
     std::unique_ptr<MQTTClient> MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>(const std::string& serverUri,
         const std::string& clientId, const MQTTConnectOptions& options)
     {
-        return std::unique_ptr<MQTTClient>(new MQTTClientImpl(serverUri, clientId, MQTTClientImpl::MQTT_PERSISTENCE_FILE, "/tmp", options));
+        return std::unique_ptr<MQTTClient>(new MQTTClientImpl(serverUri, clientId, MQTTClientImpl::MQTT_PERSISTENCE_NONE, "", options));
     }
 }
 } // namespace IoT::MQTT
