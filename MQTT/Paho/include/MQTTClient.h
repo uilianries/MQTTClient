@@ -111,6 +111,11 @@
   #define DLLExport __attribute__ ((visibility ("default")))
 #endif
 
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmissing-field-initializers"     
+#endif
+
 #include <stdio.h>
 /// @endcond
 

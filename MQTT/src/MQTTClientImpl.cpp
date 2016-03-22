@@ -65,9 +65,9 @@ private:
 };
 
 
-MQTTClientImpl::MQTTClientImpl(const std::string& serverURI, const std::string& clientId, Persistence persistence, const std::string& persistencePath, const ConnectOptions& connectOptions):
+MQTTClientImpl::MQTTClientImpl(const std::string& serverAddr, const std::string& clientId, Persistence persistence, const std::string& persistencePath, const MQTTConnectOptions& connectOptions):
 	_clientId(clientId),
-	_serverURI(serverURI),
+	_serverURI(serverAddr),
 	_options(connectOptions),
 	_reconnectDelay(INITIAL_RECONNECT_DELAY),
 	_logger(Poco::Logger::get("IoT.MQTTClient"))
@@ -78,11 +78,11 @@ MQTTClientImpl::MQTTClientImpl(const std::string& serverURI, const std::string& 
 	switch (persistence)
 	{
 	case MQTT_PERSISTENCE_NONE:
-		rc = MQTTClient_create(&_mqttClient, serverURI.c_str(), clientId.c_str(), MQTTCLIENT_PERSISTENCE_NONE, 0);
+		rc = MQTTClient_create(&_mqttClient, serverAddr.c_str(), clientId.c_str(), MQTTCLIENT_PERSISTENCE_NONE, 0);
 		break;
 	case MQTT_PERSISTENCE_FILE:
 		_logger.debug("Persistence: " + persistencePath);
-		rc = MQTTClient_create(&_mqttClient, serverURI.c_str(), clientId.c_str(), MQTTCLIENT_PERSISTENCE_DEFAULT, const_cast<char*>(persistencePath.c_str()));
+		rc = MQTTClient_create(&_mqttClient, serverAddr.c_str(), clientId.c_str(), MQTTCLIENT_PERSISTENCE_DEFAULT, const_cast<char*>(persistencePath.c_str()));
 		break;
 	case MQTT_PERSISTENCE_DATABASE:
 		throw Poco::NotImplementedException("Database-based persistence is not yet implemented");
@@ -203,7 +203,7 @@ void MQTTClientImpl::reconnect()
 }
 
 	
-void MQTTClientImpl::connectImpl(const ConnectOptions& options)
+void MQTTClientImpl::connectImpl(const MQTTConnectOptions& options)
 {
 	MQTTClient_willOptions willOptions = MQTTClient_willOptions_initializer;
 	MQTTClient_SSLOptions sslOptions = MQTTClient_SSLOptions_initializer;

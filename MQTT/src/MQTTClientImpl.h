@@ -21,6 +21,7 @@
 
 
 #include "IoT/MQTT/MQTTClient.h"
+#include "IoT/MQTT/MQTTConnectOptions.h"
 #include "Poco/Util/Timer.h"
 #include "Poco/Logger.h"
 #include "Poco/Mutex.h"
@@ -42,78 +43,6 @@ class IoTMQTT_API MQTTClientImpl: public IoT::MQTT::MQTTClient
 public:
 	typedef Poco::SharedPtr<MQTTClientImpl> Ptr;
 
-	struct ConnectOptions
-	{
-		int keepAliveInterval;
-			/// Keep-alive interval in seconds.
-	
-		int retryInterval;
-			/// Retry interval in seconds.
-		
-		int connectTimeout;
-			/// Connect timeout in seconds.
-
-		bool cleanSession;
-			/// Start with a clean session.
-			
-		bool reliable;
-			/// If set to true, only one message at a time can be "in flight".
-
-		std::string username;
-			/// Username for MQTT v3.1.
-
-		std::string password;
-			/// Password for MQTT v3.1.
-	
-		std::string willTopic;
-			/// Last will topic name.
-	
-		std::string willMessage;
-			/// Last will message.
-
-		bool willRetained;
-			/// Retained flag for will message.
-	
-		int willQoS;
-			/// Quality of Service level for will message (0-2).
-	
-		std::vector<std::string> serverURIs;
-			/// Optional list of server URIs.
-
-		int mqttVersion;
-			/// Sets the version of MQTT to be used on the connect. Valid values are
-			/// 0, 3 and 4.
-			///   * 0 = default: start with 3.1.1, and if that fails, fall back to 3.1 
-			///   * 3 = only try version 3.1  
-			///   * 4 = only try version 3.1.1
-			
-		std::string sslTrustStore;
-			/// The file in PEM format containing the public digital certificates trusted by the client.
-		
-		std::string sslKeyStore;
-			/// The file in PEM format containing the public certificate chain of the client. 
-			/// It may also include the client's private key.
-			
-		std::string sslPrivateKey;
-			/// If not included in the sslKeyStore, this setting points to the file in PEM 
-			/// format containing the client's private key.
-			
-		std::string sslPrivateKeyPassword;
-			/// The password to load the client's privateKey if encrypted.
-			
-		std::string sslEnabledCipherSuites;
-			/// The list of cipher suites that the client will present to the server 
-			/// during the SSL handshake. For a full explanation of the cipher list 
-			/// format, please see the OpenSSL on-line documentation: 
-			/// http://www.openssl.org/docs/apps/ciphers.html#CIPHER_LIST_FORMAT 
-			/// If this setting is ommitted, its default value will be "ALL", that is, 
-			/// all the cipher suites -excluding those offering no encryption- will be 
-			/// considered. This setting can be used to set an SSL anonymous connection 
-			/// ("aNULL" string value, for instance).
-			
-		bool sslEnableServerCertAuth;
-			/// Enable or disable verification of the server certificate.
-	};
 	
 	enum Persistence
 	{
@@ -122,7 +51,7 @@ public:
 		MQTT_PERSISTENCE_DATABASE = 2  /// Database-based persistence.
 	};
 	
-	MQTTClientImpl(const std::string& serverURI, const std::string& clientId, Persistence persistence, const std::string& persistencePath, const ConnectOptions& connectOptions);
+	MQTTClientImpl(const std::string& serverAddr, const std::string& clientId, Persistence persistence, const std::string& persistencePath, const MQTTConnectOptions& connectOptions);
 		/// Creates the MQTTClientImpl with the given server URI, client ID, persistence, persistence path
 		/// and connect options.
 		///
@@ -168,7 +97,7 @@ protected:
 	};
 	
 	void reconnect();
-	void connectImpl(const ConnectOptions& options);
+	void connectImpl(const MQTTConnectOptions& options);
 	void resubscribe();
 
 	static std::string errorMessage(int code);
@@ -179,7 +108,7 @@ protected:
 private:
 	std::string _clientId;
 	std::string _serverURI;
-	ConnectOptions _options;
+	MQTTConnectOptions _options;
 	long _reconnectDelay;
 	std::map<std::string, int> _subscribedTopics;
 	std::map<std::string, int> _receivedMessages;
