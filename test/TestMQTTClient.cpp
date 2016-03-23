@@ -37,7 +37,8 @@ public:
     /**
      * \brief Start Mosquitto Broker on local machine
      */
-    MosquittoProcess() {
+    MosquittoProcess()
+    {
         auto path = Poco::Environment::get("PATH");
         Poco::Path mosquittoPath;
 
@@ -58,7 +59,8 @@ public:
         mosquittoPid_ = handle.id();
     }
 
-    ~MosquittoProcess() {
+    ~MosquittoProcess()
+    {
         Poco::Process::kill(mosquittoPid_);
     }
 
@@ -70,8 +72,7 @@ private:
 /**
  * \brief Receive events from MQTT client
  */
-struct TargetEvent
-{
+struct TargetEvent {
     /**
      * \brief Push any message fired by client
      * \param sender Client instance
@@ -79,31 +80,29 @@ struct TargetEvent
      */
     void onMessageArrived(const void* sender, const IoT::MQTT::MessageArrivedEvent& event)
     {
-        (void) sender;
+        (void)sender;
         messageArrivedEvents_.push_back(event);
     }
 
     void onMessageDelivered(const void* sender, const IoT::MQTT::MessageDeliveredEvent& event)
     {
-        (void) sender;
+        (void)sender;
         messageDeliveredvents_.push_back(event);
     }
 
     void onConnectionLost(const void* sender, const IoT::MQTT::ConnectionLostEvent& event)
     {
-        (void) sender;
+        (void)sender;
         ConnectionLostEvents_.push_back(event);
     }
 
     std::vector<IoT::MQTT::MessageArrivedEvent> messageArrivedEvents_;
     std::vector<IoT::MQTT::MessageDeliveredEvent> messageDeliveredvents_;
     std::vector<IoT::MQTT::ConnectionLostEvent> ConnectionLostEvents_;
-
 };
 
 class TestMQTTClient : public testing::Test {
 public:
-
     void SetUp() override
     {
 
@@ -114,8 +113,8 @@ public:
         using IoT::MQTT::MQTTClientFactory;
 
         mqttClient_ = MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>(mosquittoUri,
-                                                                                               clientId,
-                                                                                               connectOptions);
+            clientId,
+            connectOptions);
     }
 
     template <typename T>
@@ -125,9 +124,9 @@ public:
      * \param duration time limit to check
      * \return true if the vector is not empty. Otherwise, false
      */
-    bool waitFor (const std::vector<T>& any, const std::chrono::seconds& duration)
+    bool waitFor(const std::vector<T>& any, const std::chrono::seconds& duration)
     {
-        const std::chrono::milliseconds interval{250};
+        const std::chrono::milliseconds interval{ 250 };
         const auto timeout = std::chrono::steady_clock::now() + duration;
 
         while (timeout >= std::chrono::steady_clock::now()) {
@@ -141,6 +140,7 @@ public:
 
 protected:
     std::unique_ptr<IoT::MQTT::MQTTClient> mqttClient_;
+
 private:
     std::unique_ptr<MosquittoProcess> mosquittoProcess_;
 };
@@ -152,7 +152,7 @@ TEST_F(TestMQTTClient, ConnectedOnMosquitto)
 TEST_F(TestMQTTClient, SubscribeOnMosquitto)
 {
     constexpr auto qos = 1;
-    const std::string topic{"$SYS/#"};
+    const std::string topic{ "$SYS/#" };
     mqttClient_->subscribe(topic, qos);
 }
 
@@ -165,10 +165,10 @@ TEST_F(TestMQTTClient, Loopback)
     mqttClient_->connectionLost += Poco::delegate(&targetEvent, &TargetEvent::onConnectionLost);
 
     constexpr auto qos = 1;
-    const std::string topic{"test/IoTMQTTClient/foobar"};
+    const std::string topic{ "test/IoTMQTTClient/foobar" };
     mqttClient_->subscribe(topic, qos);
 
-    const std::string message{"C0U$&"};
+    const std::string message{ "C0U$&" };
     auto pulishToken = mqttClient_->publish(topic, message, qos);
 
     ASSERT_TRUE(waitFor(targetEvent.messageDeliveredvents_, std::chrono::seconds(3)));
