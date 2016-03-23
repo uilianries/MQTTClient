@@ -13,7 +13,7 @@ before_install:
   - sudo apt-get install -qq -y mosquitto
   - curl -s https://packagecloud.io/install/repositories/uilianries/poco/script.deb.sh | sudo bash && sudo apt-get install libpoco-1.7=1.7-1
   - git clone https://github.com/google/googletest.git && cd googletest && mkdir build && cd build && cmake .. && make && sudo make install
-  - cd ../../MQTTClient
+  - cd ../.. && rm -rf googletest
 
 script:
   - mkdir build && cd build && cmake .. && make
