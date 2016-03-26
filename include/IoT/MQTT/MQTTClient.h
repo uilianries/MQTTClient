@@ -21,6 +21,7 @@
 
 
 #include "IoT/MQTT/MQTT.h"
+#include "IoT/MQTT/MQTTConnectOptions.h"
 #include "Poco/BasicEvent.h"
 #include "Poco/SharedPtr.h"
 #include <vector>
@@ -34,13 +35,13 @@ namespace MQTT {
 struct Message
 	/// This structure encapsulates a MQTT message.
 {
-	Message(int q = 0):
+	Message(QoS q = AT_MOST_ONCE):
 		qos(q),
 		retained(false)
 	{
 	}
 	
-	Message(const std::string& p, int q):
+	Message(const std::string& p, QoS q):
 		payload(p),
 		qos(q),
 		retained(false)
@@ -50,7 +51,7 @@ struct Message
 	std::string payload; 
 		/// The payload of the MQTT message.
 
-	int qos;
+	QoS qos;
 		/// The quality of service (QoS) assigned to the message. 
 		/// There are three levels of QoS:
 		///   * 0: Fire and forget - the message may not be delivered.
@@ -126,11 +127,11 @@ struct TopicQoS
 	/// A vector of these is given to MQTTClient::subscribeMany.
 {
 	TopicQoS():
-		qos(0)
+		qos(QoS::AT_MOST_ONCE)
 	{
 	}
 	
-	TopicQoS(const std::string& t, int q = 0):
+	TopicQoS(const std::string& t, QoS q = AT_MOST_ONCE):
 		topic(t),
 		qos(q)
 	{
@@ -138,8 +139,8 @@ struct TopicQoS
 	
 	std::string topic;
 		/// The topic name, which may contain wildcards.
-		
-	int qos;
+
+	QoS qos;
 		/// The QoS level (0, 1 or 2).
 };
 
@@ -219,7 +220,7 @@ public:
 	virtual Statistics statistics() const = 0;
 		/// Returns statistics about published and received topics and message counts.
 
-	virtual int publish(const std::string& topic, const std::string& payload, int qos) = 0;
+	virtual int publish(const std::string& topic, const std::string& payload, QoS qos) = 0;
 		/// Publishes the given message on the given topic, using the given QoS.
 		///
 		/// Returns a delivery token which can be used with the messageDelivered
@@ -235,7 +236,7 @@ public:
 		///
 		/// Throws a Poco::IOException if the message cannot be published.
 		
-	virtual void subscribe(const std::string& topic, int qos) = 0;
+	virtual void subscribe(const std::string& topic, QoS qos) = 0;
 		/// This function attempts to subscribe the client to a single topic, 
 		/// which may contain wildcards. This call also specifies the Quality of service 
 		/// requested for the subscription.

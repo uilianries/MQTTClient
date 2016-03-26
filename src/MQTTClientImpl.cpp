@@ -134,7 +134,7 @@ std::vector<TopicQoS> MQTTClientImpl::subscribedTopics() const
 	Poco::Mutex::ScopedLock lock(_mutex);
 
 	std::vector<TopicQoS> result;
-	for (std::map<std::string, int>::const_iterator it = _subscribedTopics.begin(); it != _subscribedTopics.end(); ++it)
+	for (std::map<std::string, QoS>::const_iterator it = _subscribedTopics.begin(); it != _subscribedTopics.end(); ++it)
 	{
 		result.push_back(TopicQoS(it->first, it->second));
 	}
@@ -283,7 +283,7 @@ void MQTTClientImpl::disconnect(int timeout)
 }
 
 
-int MQTTClientImpl::publish(const std::string& topic, const std::string& payload, int qos)
+int MQTTClientImpl::publish(const std::string& topic, const std::string& payload, QoS qos)
 {
 	connect();
 
@@ -317,7 +317,7 @@ int MQTTClientImpl::publishMessage(const std::string& topic, const Message& mess
 }
 
 
-void MQTTClientImpl::subscribe(const std::string& topic, int qos)
+void MQTTClientImpl::subscribe(const std::string& topic, QoS qos)
 {
 	connect();
 
@@ -401,7 +401,7 @@ void MQTTClientImpl::resubscribe()
 
 	std::vector<char*> ctopics;
 	std::vector<int> qoss;
-	for (std::map<std::string, int>::const_iterator it = _subscribedTopics.begin(); it != _subscribedTopics.end(); ++it)
+	for (std::map<std::string, QoS>::const_iterator it = _subscribedTopics.begin(); it != _subscribedTopics.end(); ++it)
 	{
 		ctopics.push_back(const_cast<char*>(it->first.c_str()));
 		qoss.push_back(it->second);
@@ -499,7 +499,7 @@ int MQTTClientImpl::onMessageArrived(void* context, char* topicName, int topicLe
 			event.topic.assign(topicName, static_cast<std::string::size_type>(topicLen));
 	}
 	if (message->payload && message->payloadlen) event.message.payload.assign(static_cast<char*>(message->payload), static_cast<std::string::size_type>(message->payloadlen));
-	event.message.qos = message->qos;
+	event.message.qos = static_cast<QoS>(message->qos);
 	event.message.retained = message->retained;
 	event.dup = message->dup;
 	event.handled = true;

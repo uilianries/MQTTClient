@@ -27,6 +27,7 @@
 #include <Poco/Any.h>
 
 #include "IoT/MQTT/MQTTClientFactory.h"
+#include "TargetEvent.hpp"
 
 /** Manages Mosquitto Process */
 class MosquittoProcess {
@@ -69,38 +70,6 @@ private:
     Poco::Pipe outPipe_;
 };
 
-/**
- * \brief Receive events from MQTT client
- */
-struct TargetEvent {
-    /**
-     * \brief Push any message fired by client
-     * \param sender Client instance
-     * \param event Message fired
-     */
-    void onMessageArrived(const void* sender, const IoT::MQTT::MessageArrivedEvent& event)
-    {
-        (void)sender;
-        messageArrivedEvents_.push_back(event);
-    }
-
-    void onMessageDelivered(const void* sender, const IoT::MQTT::MessageDeliveredEvent& event)
-    {
-        (void)sender;
-        messageDeliveredvents_.push_back(event);
-    }
-
-    void onConnectionLost(const void* sender, const IoT::MQTT::ConnectionLostEvent& event)
-    {
-        (void)sender;
-        ConnectionLostEvents_.push_back(event);
-    }
-
-    std::vector<IoT::MQTT::MessageArrivedEvent> messageArrivedEvents_;
-    std::vector<IoT::MQTT::MessageDeliveredEvent> messageDeliveredvents_;
-    std::vector<IoT::MQTT::ConnectionLostEvent> ConnectionLostEvents_;
-};
-
 class TestMQTTClient : public testing::Test {
 public:
     void SetUp() override
@@ -117,27 +86,6 @@ public:
             connectOptions);
     }
 
-    template <typename T>
-    /**
-     * \brief Wait for vector is not empty, within the duration
-     * \param any vector to be observed
-     * \param duration time limit to check
-     * \return true if the vector is not empty. Otherwise, false
-     */
-    bool waitFor(const std::vector<T>& any, const std::chrono::seconds& duration)
-    {
-        const std::chrono::milliseconds interval{ 250 };
-        const auto timeout = std::chrono::steady_clock::now() + duration;
-
-        while (timeout >= std::chrono::steady_clock::now()) {
-            if (!any.empty()) {
-                return true;
-            }
-            std::this_thread::sleep_for(interval);
-        }
-        return false;
-    }
-
 protected:
     std::unique_ptr<IoT::MQTT::MQTTClient> mqttClient_;
 
@@ -151,7 +99,7 @@ TEST_F(TestMQTTClient, ConnectedOnMosquitto)
 
 TEST_F(TestMQTTClient, SubscribeOnMosquitto)
 {
-    constexpr auto qos = 1;
+    constexpr auto qos = IoT::MQTT::QoS::AT_LEAST_ONCE;
     const std::string topic{ "$SYS/#" };
     mqttClient_->subscribe(topic, qos);
 }
@@ -164,17 +112,17 @@ TEST_F(TestMQTTClient, Loopback)
     mqttClient_->messageDelivered += Poco::delegate(&targetEvent, &TargetEvent::onMessageDelivered);
     mqttClient_->connectionLost += Poco::delegate(&targetEvent, &TargetEvent::onConnectionLost);
 
-    constexpr auto qos = 1;
+    constexpr auto qos = IoT::MQTT::QoS::AT_LEAST_ONCE;
     const std::string topic{ "test/IoTMQTTClient/foobar" };
     mqttClient_->subscribe(topic, qos);
 
     const std::string message{ "C0U$&" };
     auto pulishToken = mqttClient_->publish(topic, message, qos);
 
-    ASSERT_TRUE(waitFor(targetEvent.messageDeliveredvents_, std::chrono::seconds(3)));
+    ASSERT_TRUE(TargetEvent::waitFor(targetEvent.messageDeliveredvents_, std::chrono::seconds(3)));
     ASSERT_EQ(pulishToken, targetEvent.messageDeliveredvents_.front().token);
 
-    ASSERT_TRUE(waitFor(targetEvent.messageArrivedEvents_, std::chrono::seconds(3)));
+    ASSERT_TRUE(TargetEvent::waitFor(targetEvent.messageArrivedEvents_, std::chrono::seconds(3)));
     ASSERT_EQ(topic, targetEvent.messageArrivedEvents_.front().topic);
     ASSERT_EQ(message, targetEvent.messageArrivedEvents_.front().message.payload);
     ASSERT_EQ(1, targetEvent.messageArrivedEvents_.front().message.qos);

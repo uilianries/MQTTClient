@@ -25,6 +25,18 @@
 namespace IoT {
 namespace MQTT {
 
+	enum QoS {
+		AT_MOST_ONCE ,
+		AT_LEAST_ONCE,
+		EXACTLY_ONCE
+	};
+
+	enum Version {
+		DEFAULT,
+		V_3_1 = 3,
+		V_3_1_1
+	};
+
 	struct MQTTConnectOptions
 	{
 		int keepAliveInterval = 20;
@@ -57,13 +69,13 @@ namespace MQTT {
 		bool willRetained = false;
 			/// Retained flag for will message.
 	
-		int willQoS = 0;
+		QoS willQoS = IoT::MQTT::QoS::AT_MOST_ONCE;
 			/// Quality of Service level for will message (0-2).
 	
 		std::vector<std::string> serverURIs;
 			/// Optional list of server URIs.
 
-		int mqttVersion = 0;
+		Version mqttVersion = Version::DEFAULT;
 			/// Sets the version of MQTT to be used on the connect. Valid values are
 			/// 0, 3 and 4.
 			///   * 0 = default: start with 3.1.1, and if that fails, fall back to 3.1 

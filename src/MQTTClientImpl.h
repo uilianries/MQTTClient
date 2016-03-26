@@ -82,9 +82,9 @@ public:
 	bool connected() const;
 	std::vector<TopicQoS> subscribedTopics() const;
 	Statistics statistics() const;
-	int publish(const std::string& topic, const std::string& payload, int qos);
+	int publish(const std::string& topic, const std::string& payload, QoS qos);
 	int publishMessage(const std::string& topic, const Message& message);
-	void subscribe(const std::string& topic, int qos);
+	void subscribe(const std::string& topic, QoS qos);
 	void unsubscribe(const std::string& topic);
 	void subscribeMany(const std::vector<TopicQoS>& topicsAndQoS);
 	void unsubscribeMany(const std::vector<std::string>& topics);
@@ -110,7 +110,7 @@ private:
 	std::string _serverURI;
 	MQTTConnectOptions _options;
 	long _reconnectDelay;
-	std::map<std::string, int> _subscribedTopics;
+	std::map<std::string, QoS> _subscribedTopics;
 	std::map<std::string, int> _receivedMessages;
 	std::map<std::string, int> _publishedMessages;
 	::MQTTClient _mqttClient;
