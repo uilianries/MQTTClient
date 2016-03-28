@@ -11,5 +11,8 @@ file(GLOB SOURCE_FILES
 
 include_directories(include)
 
-add_library(${PROJECT_NAME} STATIC ${SOURCE_FILES})
+add_library(${PROJECT_NAME} ${SOURCE_FILES})
 target_link_libraries(${PROJECT_NAME} ${SSL_LIBRARY} ${CRYPTO_LIBRARY})
+
+install(TARGETS ${PROJECT_NAME}
+        DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
