@@ -11,4 +11,4 @@ find_library(POCO_FOUNDATION PocoFoundation)
 find_library(POCO_NET PocoNet)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} IoTMQTT ${POCO_FOUNDATION} ${POCO_NET} ${GOOGLE_TEST} pthread)
+target_link_libraries(${PROJECT_NAME} ${CMAKE_PROJECT_NAME} ${POCO_FOUNDATION} ${POCO_NET} ${GOOGLE_TEST} pthread)
