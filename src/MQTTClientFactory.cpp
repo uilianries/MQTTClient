@@ -20,10 +20,13 @@ namespace IoT {
 namespace MQTT {
 
     template <>
-    std::unique_ptr<MQTTClient> MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>(const std::string& serverUri,
-        const std::string& clientId, const MQTTConnectOptions& options)
+    std::unique_ptr<MQTTClient> MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>(const FactoryArguments& arguments)
     {
-        return std::unique_ptr<MQTTClient>(new MQTTClientImpl(serverUri, clientId, MQTTClientImpl::MQTT_PERSISTENCE_NONE, "", options));
+        return std::unique_ptr<MQTTClient>(new MQTTClientImpl(arguments.serverUri,
+                                                              arguments.clientId,
+                                                              MQTTClientImpl::MQTT_PERSISTENCE_NONE,
+                                                              "",
+                                                              arguments.options));
     }
 }
 } // namespace IoT::MQTT

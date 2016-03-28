@@ -36,9 +36,9 @@ TEST(TestRemoteConnection, ConnectToMQTTCloud)
 
     using IoT::MQTT::MQTTClientFactory;
 
-    auto client = MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>(broker_path.str(),
+    auto client = MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>({broker_path.str(),
         clientId,
-        connectOptions);
+        connectOptions});
 
     TargetEvent targetEvent;
     client->connectionLost += Poco::delegate(&targetEvent, &TargetEvent::onConnectionLost);

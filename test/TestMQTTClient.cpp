@@ -81,9 +81,9 @@ public:
 
         using IoT::MQTT::MQTTClientFactory;
 
-        mqttClient_ = MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>(mosquittoUri,
+        mqttClient_ = MQTTClientFactory::CreateMQTTClient<MQTTClientFactory::ClientType::Paho>({mosquittoUri,
             clientId,
-            connectOptions);
+            connectOptions});
     }
 
 protected:

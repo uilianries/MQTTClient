@@ -43,19 +43,24 @@ namespace MQTT {
         Paho
     };
 
+    /**
+     * \brief Factory options
+     */
+    struct FactoryArguments {
+        std::string serverUri;      /**< Broker address */
+        std::string clientId;       /**< Unique identifier to broker register */
+        MQTTConnectOptions options; /**< Connections Options */
+    };
+
     template <ClientType>
     /**
      * \brief Create a MQTT client, based on some sub-client.
      *        For now, the only supported is Paho.
-     * \param serverURI Broker address
-     * \param clientId Unique identifier to broker register
-     * \param options Connections Options
-     * \return A MQTTClient instance
+     * \param arguments Factory arguments
      */
-    static std::unique_ptr<MQTTClient> CreateMQTTClient(const std::string& serverUri,
-            const std::string& clientId, const MQTTConnectOptions& options);
+    static std::unique_ptr<MQTTClient> CreateMQTTClient(const FactoryArguments& arguments);
 
-    };
+};
 
 
 } } // namespace IoT::MQTT
