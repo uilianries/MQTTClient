@@ -8,6 +8,7 @@ The Project Macchina.io provides a sweet MQTT Client (Paho based), with Poco lib
 - Paho dependencies:
     - SSL library;
     - Crypto library;
+    - Posix Thread (pthread) library;
 - Google Test libraries.
 
 # How to install

@@ -10,5 +10,8 @@ find_library(GOOGLE_TEST gtest)
 find_library(POCO_FOUNDATION PocoFoundation)
 find_library(POCO_NET PocoNet)
 
+set(POCO_LIBRARIES ${POCO_FOUNDATION} ${POCO_NET})
+set(MQTTCLIENT_LIBRARIES ${CMAKE_PROJECT_NAME} Paho ssl crypto pthread)
+
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
-target_link_libraries(${PROJECT_NAME} ${CMAKE_PROJECT_NAME} ${POCO_FOUNDATION} ${POCO_NET} ${GOOGLE_TEST} pthread)
+target_link_libraries(${PROJECT_NAME} ${POCO_LIBRARIES} ${MQTTCLIENT_LIBRARIES} ${GOOGLE_TEST})

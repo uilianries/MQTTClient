@@ -11,4 +11,5 @@ add_subdirectory(src)
 add_subdirectory(Paho)
 add_subdirectory(test)
 add_subdirectory(include)
+add_subdirectory(samples)
 
