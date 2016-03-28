@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8)
 project(SamplesIoTMQTT CXX)
 
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
 find_library(POCO_FOUNDATION PocoFoundation)
 find_library(POCO_UTIL PocoUtil)
 
