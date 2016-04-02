@@ -28,12 +28,15 @@ bool test_connection(const std::string& url)
 {
     auto result = false;
     Poco::Net::HTTPClientSession session(url);
+    session.setTimeout(Poco::Timespan(10, 0));
     Poco::Net::HTTPRequest req(Poco::Net::HTTPRequest::HTTP_GET);
     try {
         session.sendRequest(req);
         result = true;
     }
     catch (const Poco::Net::HostNotFoundException&) {
+    }
+    catch (const Poco::TimeoutException&) {
     }
 
     return result;

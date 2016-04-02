@@ -22,10 +22,36 @@
 #include "IoT/MQTT/MQTTClientFactory.h"
 #include "TargetEvent.hpp"
 
-TEST(TestRemoteConnection, ConnectToMQTTCloud)
+class TestRemoteConnection : public ::testing::Test
 {
-    constexpr auto mqtt_server_url = "test.mosquitto.org";
-    ASSERT_TRUE(internet_connection::test_connection(mqtt_server_url));
+protected:
+    void SetUp() override
+    {
+        auto servers_uri = { "test.mosquitto.org",  "broker.hivemq.com" };
+        auto connected = false;
+        for (const auto& server_uri : servers_uri) {
+            connected = internet_connection::test_connection(server_uri);
+            if (connected) {
+                mqtt_server_url_ = server_uri;
+                break;
+            }
+        }
+
+        ASSERT_TRUE(connected);
+    }
+
+    const std::string& get_mqtt_server_url() const noexcept
+    {
+        return mqtt_server_url_;
+    }
+
+private:
+    std::string mqtt_server_url_;
+};
+
+TEST_F(TestRemoteConnection, ConnectToMQTTCloud)
+{
+    const auto& mqtt_server_url = get_mqtt_server_url();
 
     std::string clientId = "TestIoTMQTTClient";
     constexpr auto mqtt_server_port = 1883;
@@ -45,7 +71,7 @@ TEST(TestRemoteConnection, ConnectToMQTTCloud)
     client->messageDelivered += Poco::delegate(&targetEvent, &TargetEvent::onMessageDelivered);
     client->messageArrived += Poco::delegate(&targetEvent, &TargetEvent::onMessageArrived);
 
-    const std::chrono::seconds timeout(5);
+    const std::chrono::seconds timeout(10);
     constexpr auto topic = "test/iot/mqtt/foo/bar";
     constexpr auto message = "couse";
 
