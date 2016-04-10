@@ -45,7 +45,13 @@ struct TargetEvent {
     void onConnectionLost(const void* sender, const IoT::MQTT::ConnectionLostEvent& event)
     {
         (void)sender;
-        ConnectionLostEvents_.push_back(event);
+        connectionLostEvents_.push_back(event);
+    }
+
+    void onConnectionDone(const void* sender, const IoT::MQTT::ConnectionDoneEvent& event)
+    {
+        (void)sender;
+        connectionDoneEvents_.push_back(event);
     }
 
     template <typename T>
@@ -71,7 +77,9 @@ struct TargetEvent {
 
     std::vector<IoT::MQTT::MessageArrivedEvent> messageArrivedEvents_;
     std::vector<IoT::MQTT::MessageDeliveredEvent> messageDeliveredvents_;
-    std::vector<IoT::MQTT::ConnectionLostEvent> ConnectionLostEvents_;
+    std::vector<IoT::MQTT::ConnectionLostEvent> connectionLostEvents_;
+    std::vector<IoT::MQTT::ConnectionDoneEvent> connectionDoneEvents_;
+
 };
 
 #endif //MACCHINAIOMQTTCLIENT_TARGETEVENT_HPP

@@ -13,7 +13,7 @@ find_library(POCO_JSON PocoJSON)
 find_library(POCO_FOUNDATION PocoFoundation)
 set(POCO_LIBRARIES ${POCO_UTIL} ${POCO_XML} ${POCO_JSON} ${POCO_FOUNDATION})
 
-add_library(${CMAKE_PROJECT_NAME} ${SOURCE_FILES})
+add_library(${CMAKE_PROJECT_NAME} STATIC ${SOURCE_FILES})
 target_link_libraries(${CMAKE_PROJECT_NAME} ${POCO_LIBRARIES} Paho)
 
 install(TARGETS ${CMAKE_PROJECT_NAME} 

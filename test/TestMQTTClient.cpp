@@ -111,10 +111,16 @@ TEST_F(TestMQTTClient, Loopback)
     mqttClient_->messageArrived += Poco::delegate(&targetEvent, &TargetEvent::onMessageArrived);
     mqttClient_->messageDelivered += Poco::delegate(&targetEvent, &TargetEvent::onMessageDelivered);
     mqttClient_->connectionLost += Poco::delegate(&targetEvent, &TargetEvent::onConnectionLost);
+    mqttClient_->connectionDone += Poco::delegate(&targetEvent, &TargetEvent::onConnectionDone);
 
     constexpr auto qos = IoT::MQTT::QoS::AT_LEAST_ONCE;
     const std::string topic{ "test/IoTMQTTClient/foobar" };
+    ASSERT_TRUE(!mqttClient_->connected());
+
     mqttClient_->subscribe(topic, qos);
+
+    ASSERT_TRUE(TargetEvent::waitFor(targetEvent.connectionDoneEvents_, std::chrono::seconds(3)));
+    ASSERT_TRUE(mqttClient_->connected());
 
     const std::string message{ "C0U$&" };
     auto pulishToken = mqttClient_->publish(topic, message, qos);
@@ -128,4 +134,17 @@ TEST_F(TestMQTTClient, Loopback)
     ASSERT_EQ(1, targetEvent.messageArrivedEvents_.front().message.qos);
 
     mqttClient_->unsubscribe(topic);
+}
+
+TEST_F(TestMQTTClient, DisconnectMosquitto)
+{
+    TargetEvent targetEvent;
+    mqttClient_->connectionLost += Poco::delegate(&targetEvent, &TargetEvent::onConnectionLost);
+    mqttClient_->subscribe("foo", IoT::MQTT::QoS::AT_LEAST_ONCE);
+
+    ASSERT_TRUE(mqttClient_->connected());
+
+    const int timeout_seconds = 10 * 1000;
+    mqttClient_->disconnect(timeout_seconds);
+    ASSERT_TRUE(!mqttClient_->connected());
 }

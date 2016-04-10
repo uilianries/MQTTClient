@@ -253,6 +253,13 @@ void MQTTClientImpl::connectImpl(const MQTTConnectOptions& options)
 	int rc = MQTTClient_connect(_mqttClient, &connectOptions);
 	if (rc != MQTTCLIENT_SUCCESS)
 		throw Poco::IOException(Poco::format("Cannot connect to MQTT server \"%s\"", _serverURI), errorMessage(rc), rc);
+
+	{
+		Poco::Mutex::ScopedLock lock(_mutex);
+
+		ConnectionDoneEvent connectionDoneEvent;
+		connectionDone(this, connectionDoneEvent);
+	}
 		
 	_logger.information(Poco::format("Connected to MQTT server \"%s\".", _serverURI));
 	_reconnectDelay = INITIAL_RECONNECT_DELAY;

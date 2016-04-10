@@ -27,7 +27,7 @@ class TestRemoteConnection : public ::testing::Test
 protected:
     void SetUp() override
     {
-        auto servers_uri = { "test.mosquitto.org",  "broker.hivemq.com" };
+        auto servers_uri = { "broker.hivemq.com", "test.mosquitto.org" };
         auto connected = false;
         for (const auto& server_uri : servers_uri) {
             connected = internet_connection::test_connection(server_uri);
@@ -53,7 +53,7 @@ TEST_F(TestRemoteConnection, ConnectToMQTTCloud)
 {
     const auto& mqtt_server_url = get_mqtt_server_url();
 
-    std::string clientId = "TestIoTMQTTClient";
+    std::string clientId = "TestIoTMQTTClient" + std::string(__DATE__);
     constexpr auto mqtt_server_port = 1883;
     std::ostringstream broker_path;
     broker_path << mqtt_server_url << ":" << mqtt_server_port;
@@ -70,20 +70,26 @@ TEST_F(TestRemoteConnection, ConnectToMQTTCloud)
     client->connectionLost += Poco::delegate(&targetEvent, &TargetEvent::onConnectionLost);
     client->messageDelivered += Poco::delegate(&targetEvent, &TargetEvent::onMessageDelivered);
     client->messageArrived += Poco::delegate(&targetEvent, &TargetEvent::onMessageArrived);
+    client->connectionDone +=  Poco::delegate(&targetEvent, &TargetEvent::onConnectionDone);
 
     const std::chrono::seconds timeout(10);
     constexpr auto topic = "test/iot/mqtt/foo/bar";
-    constexpr auto message = "couse";
 
+    ASSERT_TRUE(!client->connected());
     client->subscribe(topic, IoT::MQTT::QoS::AT_LEAST_ONCE);
-    auto token = client->publish(topic, message, IoT::MQTT::QoS::AT_LEAST_ONCE);
+    ASSERT_TRUE(TargetEvent::waitFor(targetEvent.connectionDoneEvents_, timeout));
+    ASSERT_TRUE(client->connected());
+
+    auto token = client->publish(topic, __FILE__, IoT::MQTT::QoS::AT_LEAST_ONCE);
 
     ASSERT_TRUE(TargetEvent::waitFor(targetEvent.messageDeliveredvents_, timeout));
     ASSERT_EQ(token, targetEvent.messageDeliveredvents_.back().token);
 
     ASSERT_TRUE(TargetEvent::waitFor(targetEvent.messageArrivedEvents_, timeout));
     auto& payload = targetEvent.messageArrivedEvents_.back().message.payload;
-    ASSERT_EQ(message, payload);
+    ASSERT_EQ(__FILE__, payload);
 
     client->unsubscribe(topic);
+    client->disconnect(10000);
+    ASSERT_TRUE(!client->connected());
 }

@@ -65,8 +65,8 @@ public:
 		/// Connects to the MQTT server, if not yet connected.
 		///
 		/// Throws a Poco::IOException if the connection cannot be established.
-		
-	void disconnect(int timeout);
+
+	void disconnect(int timeout) override;
 		/// This function attempts to disconnect the client from the MQTT server. 
 		/// In order to allow the client time to complete handling of messages that are 
 		/// in-flight when this function is called, a timeout period is specified. 

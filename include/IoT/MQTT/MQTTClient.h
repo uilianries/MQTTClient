@@ -26,7 +26,6 @@
 #include "Poco/SharedPtr.h"
 #include <vector>
 
-
 namespace IoT {
 namespace MQTT {
 
@@ -121,6 +120,12 @@ struct ConnectionLostEvent
 	std::string cause;
 };
 
+//@ serialize
+struct ConnectionDoneEvent
+	/// Event arguments for MQTTClient::connectionDone
+{
+
+};
 
 //@ serialize
 struct TopicQoS
@@ -198,6 +203,9 @@ public:
 	Poco::BasicEvent<const ConnectionLostEvent> connectionLost;
 		/// Fired when the connection to the MQTT server has been lost.
 
+	Poco::BasicEvent<const ConnectionDoneEvent> connectionDone;
+		/// Fired when the connection to the MQTT server has been done
+
 	MQTTClient();
 		/// Creates the MQTTClient.
 		
@@ -212,6 +220,9 @@ public:
 		
 	virtual bool connected() const = 0;
 		/// Returns true if the client is currently connected to the server.
+
+	virtual void disconnect(int timeout) = 0;
+		/// Try to disconnect from broker, within the timeout in milliseconds
 		
 	virtual std::vector<TopicQoS> subscribedTopics() const = 0;
 		/// Returns a vector containing all currently subscribed
