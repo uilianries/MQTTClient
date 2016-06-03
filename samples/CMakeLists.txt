@@ -3,14 +3,10 @@ project(SamplesIoTMQTT CXX)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-find_library(POCO_FOUNDATION PocoFoundation)
-find_library(POCO_UTIL PocoUtil)
-
-set(POCO_LIBRARIES ${POCO_FOUNDATION} ${POCO_UTIL})
-set(MQTTCLIENT_LIBRARIES ${CMAKE_PROJECT_NAME} Paho ssl crypto pthread)
+set(MQTTCLIENT_LIBRARIES ${CMAKE_PROJECT_NAME} Paho)
 
 add_executable(SubscribeSample subscribe.cpp)
-target_link_libraries(SubscribeSample ${MQTTCLIENT_LIBRARIES} ${POCO_LIBRARIES})
+target_link_libraries(SubscribeSample ${MQTTCLIENT_LIBRARIES} ${CONAN_LIBS_OPENSSL})
 
 add_executable(PublishSample publish.cpp)
-target_link_libraries(PublishSample ${MQTTCLIENT_LIBRARIES} ${POCO_LIBRARIES})
+target_link_libraries(PublishSample ${MQTTCLIENT_LIBRARIES} ${CONAN_LIBS_OPENSSL})

@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 2.8)
 project(IoTMQTTClient CXX)
 
+include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
+conan_basic_setup()
+
 option(TESTS "Generate tests" ON)
 option(SAMPLES "Generate samples" ON)
 
