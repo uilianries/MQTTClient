@@ -52,16 +52,14 @@ private:
 
 TEST_F(TestRemoteConnection, ConnectToMQTTCloud)
 {
-    const auto& mqtt_server_url = "m10.cloudmqtt.com";
+    const auto& mqtt_server_url = get_mqtt_server_url();
 
     std::string clientId = "TestIoTMQTTClient_" + std::to_string(Poco::Process::id());
-    constexpr auto mqtt_server_port = 17460;
+    constexpr auto mqtt_server_port = 1883;
     std::ostringstream broker_path;
     broker_path << mqtt_server_url << ":" << mqtt_server_port;
 
     IoT::MQTT::MQTTConnectOptions connectOptions;
-    connectOptions.username = "mqttclient";
-    connectOptions.password = "mqttclient";
 
     using IoT::MQTT::MQTTClientFactory;
 
