@@ -20,7 +20,7 @@ script:
   - cmake .. 
   - cmake --build .
   - sudo make install
-  - test/TestIoTMQTT
+  - bin/TestIoTMQTT
 
 branches:
   only:
