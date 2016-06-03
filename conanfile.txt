@@ -1,0 +1,7 @@
+[requires]
+Poco/1.7.2@lasote/stable
+OpenSSL/1.0.2e@lasote/stable
+gtest/1.7.0@lasote/stable
+
+[generators]
+cmake

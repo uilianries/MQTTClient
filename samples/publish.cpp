@@ -55,6 +55,7 @@ public:
      */
     void OnConnectionLost(const void *_sender, const IoT::MQTT::ConnectionLostEvent& _event)
     {
+        (void) _sender;
         std::cerr << "Connection Lost: " << _event.cause << std::endl;
         std::cerr << std::flush;
 
