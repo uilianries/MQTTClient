@@ -14,7 +14,8 @@ before_install:
   - sudo pip install conan
 
 script:
-  - mkdir build && cd buildi
+  - mkdir build
+  - cd build
   - conan install ..
   - cmake .. 
   - cmake --build .
