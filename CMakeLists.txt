@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(IoTMQTTClient CXX)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
+
+find_package(Poco REQUIRED Net)
 
 option(TESTS "Generate tests" ON)
 option(SAMPLES "Generate samples" ON)
